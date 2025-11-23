@@ -1,149 +1,134 @@
-import { ComponentType, FC, useEffect, useMemo, useRef, useState } from "react"
-// eslint-disable-next-line no-restricted-imports
-import { TextInput, TextStyle, ViewStyle } from "react-native"
-
-import { Button } from "@/components/Button"
-import { PressableIcon } from "@/components/Icon"
+import React, { useState, useEffect } from "react"
+import { ViewStyle, TextStyle, View, Alert } from "react-native"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { TextField, type TextFieldAccessoryProps } from "@/components/TextField"
-import { useAuth } from "@/context/AuthContext"
-import type { AppStackScreenProps } from "@/navigators/navigationTypes"
-import { useAppTheme } from "@/theme/context"
-import type { ThemedStyle } from "@/theme/types"
+import { TextField } from "@/components/TextField"
+import { Button } from "@/components/Button"
+import { useAuthStore } from "@/stores/useAuthStore"
+import { spacing } from "@/theme/spacing"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
-
-export const LoginScreen: FC<LoginScreenProps> = () => {
-  const authPasswordInput = useRef<TextInput>(null)
-
-  const [authPassword, setAuthPassword] = useState("")
-  const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
+export const LoginScreen = () => {
+  const { bottom } = useSafeAreaInsets()
+  const [tenant, setTenant] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [attemptsCount, setAttemptsCount] = useState(0)
-  const { authEmail, setAuthEmail, setAuthToken, validationError } = useAuth()
 
-  const {
-    themed,
-    theme: { colors },
-  } = useAppTheme()
+  const login = useAuthStore((state) => state.login)
+  const isLoading = useAuthStore((state) => state.isLoading)
+  const error = useAuthStore((state) => state.error)
+  const clearError = useAuthStore((state) => state.clearError)
 
+  // Clear errors when unmounting
   useEffect(() => {
-    // Here is where you could fetch credentials from keychain or storage
-    // and pre-fill the form fields.
-    setAuthEmail("ignite@infinite.red")
-    setAuthPassword("ign1teIsAwes0m3")
-  }, [setAuthEmail])
+    return () => clearError()
+  }, [])
 
-  const error = isSubmitted ? validationError : ""
-
-  function login() {
+  const handleLogin = async () => {
     setIsSubmitted(true)
-    setAttemptsCount(attemptsCount + 1)
 
-    if (validationError) return
+    if (!email || !password || !tenant) return
 
-    // Make a request to your server to get an authentication token.
-    // If successful, reset the fields and set the token.
-    setIsSubmitted(false)
-    setAuthPassword("")
-    setAuthEmail("")
-
-    // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
+    const success = await login(email, password, tenant)
+    if (success) {
+      // Navigation is handled by AppNavigator based on auth state
+    } else {
+      Alert.alert("Login Failed", error || "Something went wrong")
+    }
   }
-
-  const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
-    () =>
-      function PasswordRightAccessory(props: TextFieldAccessoryProps) {
-        return (
-          <PressableIcon
-            icon={isAuthPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
-            containerStyle={props.style}
-            size={20}
-            onPress={() => setIsAuthPasswordHidden(!isAuthPasswordHidden)}
-          />
-        )
-      },
-    [isAuthPasswordHidden, colors.palette.neutral800],
-  )
 
   return (
     <Screen
       preset="auto"
-      contentContainerStyle={themed($screenContentContainer)}
+      contentContainerStyle={$screenContentContainer}
       safeAreaEdges={["top", "bottom"]}
     >
-      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
-      <Text tx="loginScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
-      {attemptsCount > 2 && (
-        <Text tx="loginScreen:hint" size="sm" weight="light" style={themed($hint)} />
-      )}
+      <View style={$container}>
+        <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={$signIn} />
+        <Text tx="loginScreen:tapToLogIn" preset="subheading" style={$enterDetails} />
 
-      <TextField
-        value={authEmail}
-        onChangeText={setAuthEmail}
-        containerStyle={themed($textField)}
-        autoCapitalize="none"
-        autoComplete="email"
-        autoCorrect={false}
-        keyboardType="email-address"
-        labelTx="loginScreen:emailFieldLabel"
-        placeholderTx="loginScreen:emailFieldPlaceholder"
-        helper={error}
-        status={error ? "error" : undefined}
-        onSubmitEditing={() => authPasswordInput.current?.focus()}
-      />
+        <TextField
+          value={tenant}
+          onChangeText={setTenant}
+          containerStyle={$textField}
+          autoCapitalize="none"
+          autoComplete="off"
+          autoCorrect={false}
+          label="Workspace"
+          placeholder="Enter your workspace"
+          helper={isSubmitted && !tenant ? "Workspace is required" : undefined}
+          status={isSubmitted && !tenant ? "error" : undefined}
+        />
 
-      <TextField
-        ref={authPasswordInput}
-        value={authPassword}
-        onChangeText={setAuthPassword}
-        containerStyle={themed($textField)}
-        autoCapitalize="none"
-        autoComplete="password"
-        autoCorrect={false}
-        secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen:passwordFieldLabel"
-        placeholderTx="loginScreen:passwordFieldPlaceholder"
-        onSubmitEditing={login}
-        RightAccessory={PasswordRightAccessory}
-      />
+        <TextField
+          value={email}
+          onChangeText={setEmail}
+          containerStyle={$textField}
+          autoCapitalize="none"
+          autoComplete="email"
+          autoCorrect={false}
+          keyboardType="email-address"
+          labelTx="loginScreen:emailFieldLabel"
+          placeholderTx="loginScreen:emailFieldPlaceholder"
+          helper={isSubmitted && !email ? "Email is required" : undefined}
+          status={isSubmitted && !email ? "error" : undefined}
+        />
 
-      <Button
-        testID="login-button"
-        tx="loginScreen:tapToLogIn"
-        style={themed($tapButton)}
-        preset="reversed"
-        onPress={login}
-      />
+        <TextField
+          value={password}
+          onChangeText={setPassword}
+          containerStyle={$textField}
+          autoCapitalize="none"
+          autoComplete="password"
+          autoCorrect={false}
+          secureTextEntry={true}
+          labelTx="loginScreen:passwordFieldLabel"
+          placeholderTx="loginScreen:passwordFieldPlaceholder"
+          helper={isSubmitted && !password ? "Password is required" : undefined}
+          status={isSubmitted && !password ? "error" : undefined}
+          onSubmitEditing={handleLogin}
+        />
+
+        <Button
+          testID="login-button"
+          tx="loginScreen:logIn"
+          style={$tapButton}
+          preset="reversed"
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
+          {isLoading && <Text text="Loading..." style={{ color: "white" }} />}
+        </Button>
+      </View>
     </Screen>
   )
 }
 
-const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $screenContentContainer: ViewStyle = {
   paddingVertical: spacing.xxl,
   paddingHorizontal: spacing.lg,
-})
+  flex: 1,
+  justifyContent: "center",
+}
 
-const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
+const $container: ViewStyle = {
+  flex: 1,
+  justifyContent: "center",
+}
+
+const $signIn: TextStyle = {
   marginBottom: spacing.sm,
-})
+}
 
-const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
+const $enterDetails: TextStyle = {
   marginBottom: spacing.lg,
-})
+}
 
-const $hint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.tint,
-  marginBottom: spacing.md,
-})
-
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $textField: ViewStyle = {
   marginBottom: spacing.lg,
-})
+}
 
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $tapButton: ViewStyle = {
   marginTop: spacing.xs,
-})
+}

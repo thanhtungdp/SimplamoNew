@@ -24,7 +24,6 @@ import * as Linking from "expo-linking"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
 
-import { AuthProvider } from "./context/AuthContext"
 import { initI18n } from "./i18n"
 import { AppNavigator } from "./navigators/AppNavigator"
 import { useNavigationPersistence } from "./navigators/navigationUtilities"
@@ -32,51 +31,9 @@ import { ThemeProvider } from "./theme/context"
 import { customFontsToLoad } from "./theme/typography"
 import { loadDateFnsLocale } from "./utils/formatDate"
 import * as storage from "./utils/storage"
-import { Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation';
-
-const Tab = createNativeBottomTabNavigator();
-
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home!</Text>
-    </View>
-  );
-}
-
-function SettingsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
-    </View>
-  );
-}
-
-export default function App2() {
-  return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            tabBarIcon: () => ({ sfSymbol: 'book' }),
-          }}
-        />
-        <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{
-            tabBarIcon: () => ({ sfSymbol: 'gear' }),
-            preventsDefault: true, // Prevents automatic tab switching
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
-  );
-}
+import Config from "./config"
+import { ErrorBoundary } from "./screens/ErrorScreen/ErrorBoundary"
+import { View, Text } from "react-native"
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -106,7 +63,7 @@ const config = {
  * @param {AppProps} props - The props for the `App` component.
  * @returns {JSX.Element} The rendered `App` component.
  */
-export function App() {
+export default function App() {
   const {
     initialNavigationState,
     onNavigationStateChange,
@@ -141,8 +98,8 @@ export function App() {
   // otherwise, we're ready to render the app
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <KeyboardProvider>
-        <AuthProvider>
+      <ErrorBoundary catchErrors={Config.catchErrors}>
+        <KeyboardProvider>
           <ThemeProvider>
             <AppNavigator
               linking={linking}
@@ -150,8 +107,8 @@ export function App() {
               onStateChange={onNavigationStateChange}
             />
           </ThemeProvider>
-        </AuthProvider>
-      </KeyboardProvider>
+        </KeyboardProvider>
+      </ErrorBoundary>
     </SafeAreaProvider>
   )
 }

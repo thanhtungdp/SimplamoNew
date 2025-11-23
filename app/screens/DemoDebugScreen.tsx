@@ -14,7 +14,7 @@ import { Button } from "@/components/Button"
 import { ListItem } from "@/components/ListItem"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { useAuth } from "@/context/AuthContext"
+import { useAuthStore } from "@/stores/useAuthStore"
 import { isRTL } from "@/i18n"
 import { DemoTabScreenProps } from "@/navigators/navigationTypes"
 import { useAppTheme } from "@/theme/context"
@@ -35,7 +35,8 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
   _props,
 ) {
   const { setThemeContextOverride, themeContext, themed } = useAppTheme()
-  const { logout } = useAuth()
+  const logout = useAuthStore((state) => state.logout)
+  const user = useAuthStore((state) => state.user)
 
   // @ts-expect-error
   const usingFabric = global.nativeFabricUIManager != null
@@ -71,6 +72,8 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
     setThemeContextOverride(undefined)
   }, [setThemeContextOverride])
 
+  console.log(user)
+
   return (
     <Screen
       preset="scroll"
@@ -90,6 +93,34 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
 
       <View style={themed($itemsContainer)}>
         <Button onPress={toggleTheme} text={`Toggle Theme: ${themeContext}`} />
+      </View>
+
+      <View style={themed($itemsContainer)}>
+        <Text preset="heading" text="User Profile" style={themed($title)} />
+        <ListItem
+          LeftComponent={
+            <View style={themed($item)}>
+              <Text preset="bold">Name</Text>
+              <Text>{user?.fullName || "N/A"}</Text>
+            </View>
+          }
+        />
+        <ListItem
+          LeftComponent={
+            <View style={themed($item)}>
+              <Text preset="bold">Email</Text>
+              <Text>{user?.email || "N/A"}</Text>
+            </View>
+          }
+        />
+        <ListItem
+          LeftComponent={
+            <View style={themed($item)}>
+              <Text preset="bold">Tenant</Text>
+              <Text>{user?.tenant?.name || "N/A"}</Text>
+            </View>
+          }
+        />
       </View>
       <View style={themed($itemsContainer)}>
         <ListItem
