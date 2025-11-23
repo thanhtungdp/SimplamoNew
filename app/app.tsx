@@ -32,6 +32,51 @@ import { ThemeProvider } from "./theme/context"
 import { customFontsToLoad } from "./theme/typography"
 import { loadDateFnsLocale } from "./utils/formatDate"
 import * as storage from "./utils/storage"
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation';
+
+const Tab = createNativeBottomTabNavigator();
+
+function HomeScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Home!</Text>
+    </View>
+  );
+}
+
+function SettingsScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Settings!</Text>
+    </View>
+  );
+}
+
+export default function App2() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: () => ({ sfSymbol: 'book' }),
+          }}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            tabBarIcon: () => ({ sfSymbol: 'gear' }),
+            preventsDefault: true, // Prevents automatic tab switching
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -91,6 +136,7 @@ export function App() {
     prefixes: [prefix],
     config,
   }
+
 
   // otherwise, we're ready to render the app
   return (

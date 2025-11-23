@@ -1,5 +1,5 @@
 import { TextStyle, ViewStyle } from "react-native"
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { createNativeBottomTabNavigator } from "@bottom-tabs/react-navigation"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Icon } from "@/components/Icon"
@@ -14,13 +14,15 @@ import type { ThemedStyle } from "@/theme/types"
 
 import type { DemoTabParamList } from "./navigationTypes"
 
-const Tab = createBottomTabNavigator<DemoTabParamList>()
+const Tab = createNativeBottomTabNavigator<DemoTabParamList>()
 
 /**
- * This is the main navigator for the demo screens with a bottom tab bar.
+ * This is the main navigator for the demo screens with a native bottom tab bar.
  * Each tab is a stack navigator with its own set of screens.
+ * 
+ * Uses native iOS UITabBarController with translucent blur effect (liquid glass).
  *
- * More info: https://reactnavigation.org/docs/bottom-tab-navigator/
+ * More info: https://callstackincubator.github.io/react-native-bottom-tabs/
  * @returns {JSX.Element} The rendered `DemoNavigator`.
  */
 export function DemoNavigator() {
@@ -33,28 +35,20 @@ export function DemoNavigator() {
   return (
     <EpisodeProvider>
       <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarHideOnKeyboard: true,
-          tabBarStyle: themed([$tabBar, { height: bottom + 70 }]),
-          tabBarActiveTintColor: colors.text,
-          tabBarInactiveTintColor: colors.text,
-          tabBarLabelStyle: themed($tabBarLabel),
-          tabBarItemStyle: themed($tabBarItem),
-        }}
+        tabBarActiveTintColor={colors.tint}
+        tabBarInactiveTintColor={colors.tintInactive}
+        tabBarStyle={themed($tabBar)}
+        tabLabelStyle={themed($tabBarLabel)}
+        // Enable translucent blur effect (liquid glass) on iOS
+        translucent={true}
       >
         <Tab.Screen
           name="DemoShowroom"
           component={DemoShowroomScreen}
           options={{
             tabBarLabel: translate("demoNavigator:componentsTab"),
-            tabBarIcon: ({ focused }) => (
-              <Icon
-                icon="components"
-                color={focused ? colors.tint : colors.tintInactive}
-                size={30}
-              />
-            ),
+            // Use SF Symbol for iOS native rendering
+            tabBarIcon: () => ({ sfSymbol: "square.grid.2x2" }),
           }}
         />
 
@@ -63,13 +57,8 @@ export function DemoNavigator() {
           component={DemoCommunityScreen}
           options={{
             tabBarLabel: translate("demoNavigator:communityTab"),
-            tabBarIcon: ({ focused }) => (
-              <Icon
-                icon="community"
-                color={focused ? colors.tint : colors.tintInactive}
-                size={30}
-              />
-            ),
+            // Use SF Symbol for iOS native rendering
+            tabBarIcon: () => ({ sfSymbol: "person.3" }),
           }}
         />
 
@@ -77,11 +66,9 @@ export function DemoNavigator() {
           name="DemoPodcastList"
           component={DemoPodcastListScreen}
           options={{
-            tabBarAccessibilityLabel: translate("demoNavigator:podcastListTab"),
             tabBarLabel: translate("demoNavigator:podcastListTab"),
-            tabBarIcon: ({ focused }) => (
-              <Icon icon="podcast" color={focused ? colors.tint : colors.tintInactive} size={30} />
-            ),
+            // Use SF Symbol for iOS native rendering
+            tabBarIcon: () => ({ sfSymbol: "mic" }),
           }}
         />
 
@@ -90,9 +77,8 @@ export function DemoNavigator() {
           component={DemoDebugScreen}
           options={{
             tabBarLabel: translate("demoNavigator:debugTab"),
-            tabBarIcon: ({ focused }) => (
-              <Icon icon="debug" color={focused ? colors.tint : colors.tintInactive} size={30} />
-            ),
+            // Use SF Symbol for iOS native rendering
+            tabBarIcon: () => ({ sfSymbol: "ant" }),
           }}
         />
       </Tab.Navigator>
@@ -102,16 +88,14 @@ export function DemoNavigator() {
 
 const $tabBar: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.background,
-  borderTopColor: colors.transparent,
 })
 
-const $tabBarItem: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingTop: spacing.md,
-})
-
-const $tabBarLabel: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
+const $tabBarLabel: ThemedStyle<{
+  fontFamily?: string
+  fontSize?: number
+  fontWeight?: string
+}> = ({ typography }) => ({
   fontSize: 12,
   fontFamily: typography.primary.medium,
-  lineHeight: 16,
-  color: colors.text,
+  fontWeight: "500",
 })

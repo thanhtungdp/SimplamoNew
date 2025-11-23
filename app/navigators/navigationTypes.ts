@@ -1,5 +1,5 @@
 import { ComponentProps } from "react"
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
+import { NativeBottomTabScreenProps } from "@bottom-tabs/react-navigation"
 import {
   CompositeScreenProps,
   NavigationContainer,
@@ -30,9 +30,9 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
 >
 
 export type DemoTabScreenProps<T extends keyof DemoTabParamList> = CompositeScreenProps<
-  BottomTabScreenProps<DemoTabParamList, T>,
+  NativeBottomTabScreenProps<DemoTabParamList, T>,
   AppStackScreenProps<keyof AppStackParamList>
 >
 
 export interface NavigationProps
-  extends Partial<ComponentProps<typeof NavigationContainer<AppStackParamList>>> {}
+  extends Partial<ComponentProps<typeof NavigationContainer<AppStackParamList>>> { }
