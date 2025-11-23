@@ -6,5 +6,6 @@
  * https://reactnative.dev/docs/security#storing-sensitive-info
  */
 export default {
-  API_URL: "https://api.simplamo.com/api",
+  API_URL: "https://api.simplamo.net/api",
+  WEB_URL_DOMAIN: "simplamo.net",
 }

@@ -1,19 +1,9 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import { MMKV } from "react-native-mmkv"
-import { authApi } from "../services/api/authApi"
-
-import { User } from "../types/User"
-
-// Initialize MMKV
-export const storage = new MMKV()
-
-// Create MMKV storage wrapper for Zustand
-const zustandStorage = {
-    setItem: (name: string, value: string) => storage.set(name, value),
-    getItem: (name: string) => storage.getString(name) ?? null,
-    removeItem: (name: string) => storage.delete(name),
-}
+import { zustandStorage } from "./mmkvStorage"
+import { authApi } from "@/services/api/authApi"
+import { apiClient } from "@/services/api/apiClient"
+import { User } from "@/types/User"
 
 interface AuthState {
     token: string | null
@@ -46,15 +36,15 @@ export const useAuthStore = create<AuthState>()(
                 const result = await authApi.login(email, password, tenant)
 
                 if (result.kind === "ok") {
+                    // Set auth in apiClient for all future requests
+                    apiClient.setAuth(result.token, tenant)
+
                     set({
                         token: result.token,
                         isAuthenticated: true,
                         tenant: tenant,
                         isLoading: false
                     })
-
-                    // Set tenant header for future requests
-                    authApi.setTenantHeader(tenant)
 
                     // Fetch profile after successful login
                     get().getProfile()
@@ -83,7 +73,7 @@ export const useAuthStore = create<AuthState>()(
                 const { token } = get()
                 if (!token) return
 
-                const result = await authApi.getProfile(token)
+                const result = await authApi.getProfile()
 
                 if (result.kind === "ok") {
                     set({ user: result.user })
@@ -102,8 +92,8 @@ export const useAuthStore = create<AuthState>()(
                 tenant: state.tenant
             }),
             onRehydrateStorage: () => (state) => {
-                if (state?.tenant) {
-                    authApi.setTenantHeader(state.tenant)
+                if (state?.token && state?.tenant) {
+                    apiClient.setAuth(state.token, state.tenant)
                 }
             }
         }

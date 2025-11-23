@@ -9,6 +9,7 @@ import { DemoCommunityScreen } from "@/screens/DemoCommunityScreen"
 import { DemoDebugScreen } from "@/screens/DemoDebugScreen"
 import { DemoPodcastListScreen } from "@/screens/DemoPodcastListScreen"
 import { DemoShowroomScreen } from "@/screens/DemoShowroomScreen/DemoShowroomScreen"
+import * as Screens from "@/screens"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
@@ -69,6 +70,16 @@ export function DemoNavigator() {
             tabBarLabel: translate("demoNavigator:podcastListTab"),
             // Use SF Symbol for iOS native rendering
             tabBarIcon: () => ({ sfSymbol: "mic" }),
+          }}
+        />
+
+        <Tab.Screen
+          name="DashboardList"
+          component={Screens.DashboardListScreen}
+          options={{
+            tabBarLabel: translate("demoNavigator:dashboardListTab"),
+            // Use SF Symbol for iOS native rendering
+            tabBarIcon: () => ({ sfSymbol: "chart.bar" }),
           }}
         />
 

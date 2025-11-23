@@ -1,27 +1,19 @@
-import { ApiResponse, create } from "apisauce"
-import Config from "../../config"
-
-import { User } from "../../types/User"
+import { ApiResponse } from "apisauce"
+import { apiClient } from "./apiClient"
+import { User } from "@/types/User"
 
 // Define API response types
 export type LoginResult = { kind: "ok"; token: string } | { kind: "error"; message: string }
 export type ProfileResult = { kind: "ok"; user: User } | { kind: "error"; message: string }
 
-// Create API instance
-const api = create({
-    baseURL: Config.API_URL,
-    headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-    },
-    timeout: 30000,
-})
-
 export const authApi = {
-    // Login endpoint
+    /**
+     * Login endpoint
+     * Note: Login doesn't use apiClient.setAuth yet since we don't have the token
+     */
     login: async (email: string, password: string, tenant: string = "default"): Promise<LoginResult> => {
         try {
-            const response: ApiResponse<any> = await api.post(
+            const response: ApiResponse<any> = await apiClient.post(
                 "/auth/users/login",
                 { email, password },
                 { headers: { "tenant-id": tenant } }
@@ -42,11 +34,13 @@ export const authApi = {
         }
     },
 
-    // Get profile endpoint
-    getProfile: async (token: string): Promise<ProfileResult> => {
+    /**
+     * Get profile endpoint
+     * Uses apiClient which already has auth headers set
+     */
+    getProfile: async (): Promise<ProfileResult> => {
         try {
-            api.setHeader("Authorization", `Bearer ${token}`)
-            const response: ApiResponse<any> = await api.get("/auth/users/me")
+            const response: ApiResponse<any> = await apiClient.get("/auth/users/me")
 
             if (!response.ok) {
                 return { kind: "error", message: response.data?.message || "Failed to fetch profile" }
@@ -58,13 +52,10 @@ export const authApi = {
         }
     },
 
-    // Logout (optional, mostly client-side but good to have)
+    /**
+     * Logout - clears auth from apiClient
+     */
     logout: () => {
-        api.deleteHeader("Authorization")
-        api.deleteHeader("tenant-id")
+        apiClient.clearAuth()
     },
-
-    setTenantHeader: (tenant: string) => {
-        api.setHeader("tenant-id", tenant)
-    }
 }

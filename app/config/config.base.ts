@@ -3,6 +3,7 @@ export interface ConfigBaseProps {
   catchErrors: "always" | "dev" | "prod" | "never"
   exitRoutes: string[]
   API_URL: string
+  WEB_URL_DOMAIN: string
 }
 
 export type PersistNavigationConfig = ConfigBaseProps["persistNavigation"]
@@ -23,7 +24,8 @@ const BaseConfig: ConfigBaseProps = {
    */
   exitRoutes: ["Welcome"],
 
-  API_URL: "https://api.simplamo.com/api",
+  API_URL: "https://api.simplamo.net/api",
+  WEB_URL_DOMAIN: "simplamo.net",
 }
 
 export default BaseConfig

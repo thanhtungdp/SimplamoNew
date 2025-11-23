@@ -13,6 +13,7 @@ export type DemoTabParamList = {
   DemoShowroom: { queryIndex?: string; itemIndex?: string }
   DemoDebug: undefined
   DemoPodcastList: undefined
+  DashboardList: undefined
 }
 
 // App Stack Navigator types
@@ -20,6 +21,7 @@ export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
+  DashboardDetail: { dashboardId: string; name: string }
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
