@@ -10,7 +10,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Config from "@/config"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
-import { LoginScreen, WelcomeScreen, DemoDebugScreen, DashboardDetailScreen } from "@/screens"
+import { LoginScreen, WelcomeScreen, DemoDebugScreen, DashboardDetailScreen, TodoDetailScreen, GoalDetailScreen } from "@/screens"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator } from "./DemoNavigator"
@@ -50,6 +50,17 @@ const AppStack = () => {
 
           <Stack.Screen name="Demo" component={DemoNavigator} />
           <Stack.Screen name="DashboardDetail" component={DashboardDetailScreen} />
+          <Stack.Screen
+            name="TodoDetail"
+            component={TodoDetailScreen}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="GoalDetail"
+            component={GoalDetailScreen}
+            options={{ headerShown: false }}
+          />
         </>
       ) : (
         <>

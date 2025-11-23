@@ -49,6 +49,8 @@ const en = {
     communityTab: "Community",
     podcastListTab: "Podcast",
     dashboardListTab: "Dashboard",
+    todoListTab: "Hộp thư",
+    goalListTab: "Mục tiêu",
   },
   demoCommunityScreen: {
     title: "Connect with the community",

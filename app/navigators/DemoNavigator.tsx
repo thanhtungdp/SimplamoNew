@@ -44,16 +44,26 @@ export function DemoNavigator() {
         translucent={true}
       >
         <Tab.Screen
-          name="DemoShowroom"
-          component={DemoShowroomScreen}
+          name="TodoList"
+          component={Screens.TodoListScreen}
           options={{
-            tabBarLabel: translate("demoNavigator:componentsTab"),
+            tabBarLabel: translate("demoNavigator:todoListTab"),
             // Use SF Symbol for iOS native rendering
-            tabBarIcon: () => ({ sfSymbol: "square.grid.2x2" }),
+            tabBarIcon: () => ({ sfSymbol: "tray.fill" }),
           }}
         />
 
         <Tab.Screen
+          name="GoalList"
+          component={Screens.GoalListScreen}
+          options={{
+            tabBarLabel: translate("demoNavigator:goalListTab"),
+            // Use SF Symbol for iOS native rendering
+            tabBarIcon: () => ({ sfSymbol: "target" }),
+          }}
+        />
+
+        {/* <Tab.Screen
           name="DemoCommunity"
           component={DemoCommunityScreen}
           options={{
@@ -61,9 +71,9 @@ export function DemoNavigator() {
             // Use SF Symbol for iOS native rendering
             tabBarIcon: () => ({ sfSymbol: "person.3" }),
           }}
-        />
+        /> */}
 
-        <Tab.Screen
+        {/* <Tab.Screen
           name="DemoPodcastList"
           component={DemoPodcastListScreen}
           options={{
@@ -71,7 +81,7 @@ export function DemoNavigator() {
             // Use SF Symbol for iOS native rendering
             tabBarIcon: () => ({ sfSymbol: "mic" }),
           }}
-        />
+        /> */}
 
         <Tab.Screen
           name="DashboardList"
@@ -83,6 +93,8 @@ export function DemoNavigator() {
           }}
         />
 
+
+
         <Tab.Screen
           name="DemoDebug"
           component={DemoDebugScreen}
@@ -92,6 +104,16 @@ export function DemoNavigator() {
             tabBarIcon: () => ({ sfSymbol: "ant" }),
           }}
         />
+        <Tab.Screen
+          name="DemoShowroom"
+          component={DemoShowroomScreen}
+          options={{
+            tabBarLabel: translate("demoNavigator:componentsTab"),
+            // Use SF Symbol for iOS native rendering
+            tabBarIcon: () => ({ sfSymbol: "square.grid.2x2" }),
+          }}
+        />
+
       </Tab.Navigator>
     </EpisodeProvider>
   )

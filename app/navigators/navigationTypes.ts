@@ -14,6 +14,8 @@ export type DemoTabParamList = {
   DemoDebug: undefined
   DemoPodcastList: undefined
   DashboardList: undefined
+  TodoList: undefined
+  GoalList: undefined
 }
 
 // App Stack Navigator types
@@ -22,6 +24,8 @@ export type AppStackParamList = {
   Login: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
   DashboardDetail: { dashboardId: string; name: string }
+  TodoDetail: { todoId: string }
+  GoalDetail: { rockId: string }
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
